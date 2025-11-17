@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
 
     'accounts.apps.AccountsConfig',
+    'tickets.apps.TicketsConfig',
 ]
 
 MIDDLEWARE = [
