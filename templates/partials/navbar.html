@@ -1,0 +1,54 @@
+{% load static %}
+<header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container-fluid px-4">
+        <!-- لوگو و نام سیستم -->
+        <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="{% url 'accounts:ticket_list' %}">
+            <i class="fas fa-headset fs-4 me-2"></i>
+            <span>تیکتینگ</span>
+        </a>
+
+        <!-- دکمه برای نمایش/پنهان کردن سایدبار در موبایل -->
+        {% if user.is_authenticated %}
+        <button class="btn btn-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+            <i class="fas fa-bars"></i>
+        </button>
+        {% endif %}
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- این بخش خالی می‌ماند تا آیتم‌ها به سمت راست بروند -->
+            <ul class="navbar-nav me-auto"></ul>
+
+            <!-- پروفایل کاربر و دکمه‌ها -->
+            <ul class="navbar-nav align-items-center">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://i.pravatar.cc/150?u={{ user.username }}" class="rounded-circle me-2" alt="Avatar" width="32" height="32">
+                            <div class="d-none d-md-flex flex-column text-end">
+                                <span class="fw-bold fs-sm">{{ user.get_full_name|default:user.username }}</span>
+                                <small class="text-muted fs-xs">{{ user.get_role_display }}</small>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2" aria-labelledby="profileDropdown">
+                            <li><h6 class="dropdown-header">خوش آمدید!</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2 text-muted"></i>پروفایل</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>خروج
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">ورود</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm rounded-pill px-3">ثبت‌نام</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</header>

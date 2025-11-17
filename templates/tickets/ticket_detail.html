@@ -1,0 +1,157 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تیکت: {{ ticket.title }}{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+    <!-- اصل تیکت -->
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-lg border-0">
+
+            <!-- Header با رنگ و آیکون -->
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 p-3"
+                 style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                <h4 class="mb-0 text-dark">{{ ticket.title }}</h4>
+                <span class="badge bg-gradient text-white px-3 py-2"
+                      style="background: 
+                        {% if ticket.priority == 'critical' %}linear-gradient(to right, #dc3545, #c22737)
+                        {% elif ticket.priority == 'high' %}linear-gradient(to right, #fd7e14, #e06a00)
+                        {% elif ticket.priority == 'medium' %}linear-gradient(to right, #0d6efd, #0b58df)
+                        {% else %}linear-gradient(to right, #6c757d, #5a6268){% endif %};">
+                    <i class="fas fa-flag me-1"></i>
+                    {{ ticket.get_priority_display }}
+                </span>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <strong class="text-secondary">توضیحات:</strong>
+                    <p class="mt-2 bg-light p-3 border rounded-3" style="line-height: 1.7;">
+                        {{ ticket.description|linebreaks }}
+                    </p>
+                </div>
+
+                <!-- اطلاعات -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <strong class="text-secondary">وضعیت:</strong>
+                        <span class="badge bg-soft px-3 py-2 rounded-pill"
+                              style="background: 
+                                {% if ticket.status == 'open' %}#e0e0e0; color: #666
+                                {% elif ticket.status == 'in_progress' %}#d0eaff; color: #0056b3
+                                {% else %}#d4edda; color: #155724;{% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong class="text-secondary">ایجاد شده توسط:</strong>
+{#                        <span class="fw-medium">{{ ticket.created_by.get_full_name|default:ticket.created_by.username }}</span>#}
+                    </div>
+                    <div class="col-md-6">
+                        <strong class="text-secondary">ارجاع به:</strong>
+                        <span class="fw-medium {% if not ticket.assigned_to %}text-muted{% endif %}">
+{#                            {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username|default:'–' }}#}
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong class="text-secondary">تاریخ ایجاد:</strong>
+                        <span class="fw-medium">{{ ticket.created_at|date:'Y/m/d H:i' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center border-top p-3 gap-2">
+                <div class="btn-group">
+                    {% if user == ticket.created_by or user.is_admin %}
+                    <a href="{% url 'ticket_edit' ticket.id %}" class="btn btn-outline-secondary btn-sm px-3">
+                        <i class="fas fa-edit me-1"></i> ویرایش
+                    </a>
+                    <a href="{% url 'ticket_delete' ticket.id %}" class="btn btn-outline-danger btn-sm px-3"
+                       onclick="return confirm('آیا از حذف این تیکت مطمئن هستید؟')">
+                        <i class="fas fa-trash me-1"></i> حذف
+                    </a>
+                    {% endif %}
+                </div>
+                <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#replyModal">
+                    <i class="fas fa-reply me-1"></i> ارسال پاسخ
+                </button>
+            </div>
+        </div>
+
+        <!-- لیست پاسخ‌ها -->
+        <div class="card mt-4 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-comments text-primary me-2"></i>مکالمه</h5>
+            </div>
+            <div class="card-body p-0">
+                {% for reply in ticket.replies.all %}
+                <div class="p-3 border-bottom {% if forloop.last %}border-0{% endif %} {% if reply.user == user %}bg-light{% endif %}">
+                    <div class="d-flex justify-content-between">
+                        <strong>
+                            {{ reply.user.get_full_name|default:reply.user.username }}
+                        </strong>
+                        <small class="text-muted">{{ reply.created_at|date:'H:i Y/m/d' }}</small>
+                    </div>
+                    <p class="mt-2 mb-0">{{ reply.message|linebreaks }}</p>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted p-4">هیچ پیامی دیده نشده است.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- درخواست بستن -->
+        {% if user == ticket.created_by and ticket.status != 'closed' %}
+        <form method="post" action="{% url 'close_request' ticket.id %}" class="d-inline mt-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning px-4 py-2 rounded-pill shadow-sm d-flex align-items-center">
+                <i class="fas fa-check-circle me-2"></i> درخواست بستن تیکت
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- ابزارها -->
+    <div class="col-12 col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header bg-white fw-bold">ابزارها</div>
+            <div class="card-body">
+                <a href="{% url 'accounts:ticket_list' %}" class="btn btn-light w-100 mb-2 text-start d-flex align-items-center gap-2">
+                    <i class="fas fa-list"></i> <span>لیست تیکت‌ها</span>
+                </a>
+                {% if user.is_admin %}
+                <a href="{% url 'admin:index' %}" class="btn btn-dark w-100 mb-2 text-start d-flex align-items-center gap-2">
+                    <i class="fas fa-cogs"></i> <span>پنل مدیریت</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal پاسخ -->
+<div class="modal fade" id="replyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="post" action="#">
+            {% csrf_token %}
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title">📝 ارسال پیام</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea name="message" class="form-control" rows="5" placeholder="پیام خود را وارد کنید..." required></textarea>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">لغو</button>
+                    <button type="submit" class="btn btn-primary px-4">ارسال</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

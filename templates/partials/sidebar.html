@@ -1,0 +1,42 @@
+{% load static %}
+<ul class="nav flex-column">
+    <li class="sidebar-heading">منوی اصلی</li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.path == '/tickets/' %}active{% endif %}" href="{% url 'accounts:ticket_list' %}">
+            <i class="fas fa-th-large"></i>
+            <span>داشبورد</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.path == '/tickets/create/' %}active{% endif %}" href="{% url 'accounts:ticket_form' %}">
+            <i class="fas fa-plus-circle"></i>
+            <span>تیکت جدید</span>
+        </a>
+    </li>
+
+    {% if user.is_support or user.is_admin %}
+    <li class="sidebar-heading mt-3">پشتیبانی</li>
+    <li class="nav-item">
+        <a class="nav-link {% if 'assigned_to' in request.GET %}active{% endif %}" href="{% url 'accounts:ticket_list' %}?assigned_to=my">
+            <i class="fas fa-inbox"></i>
+            <span>تیکت‌های من</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if user.is_admin %}
+    <li class="sidebar-heading mt-3">مدیریت</li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin:index' %}" target="_blank">
+            <i class="fas fa-cogs"></i>
+            <span>پنل ادمین</span>
+        </a>
+    </li>
+     <li class="nav-item">
+        <a class="nav-link {% if 'status=open' in request.get_full_path %}active{% endif %}" href="{% url 'accounts:ticket_list' %}?status=open">
+            <i class="fas fa-folder-open"></i>
+            <span>تیکت‌های باز</span>
+        </a>
+    </li>
+    {% endif %}
+</ul>
