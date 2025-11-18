@@ -5,7 +5,7 @@ from django.db import models
 
 def user_profile_image_path(instance, filename):
     ext = filename.split('.')[-1]
-    filename = f'profile_{instance.user.username}.{ext}'
+    filename = f'profile_{instance.username}.{ext}'
     return os.path.join('profile_pics', filename)
 
 class RoleChoices(models.TextChoices):
