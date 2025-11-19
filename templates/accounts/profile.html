@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}پروفایل کاربری{% endblock %}
+
+{% block content %}
+    <div class="row gy-4">
+
+<!-- کارت خلاصه پروفایل / سمت چپ در دسکتاپ -->
+<div class="col-lg-4">
+    <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body text-center p-4">
+
+            <!-- آواتار -->
+            <div class="position-relative d-inline-block mb-3">
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}"
+                         alt="Avatar"
+                         class="rounded-circle border border-3 border-white shadow-sm"
+                         width="110" height="110">
+                {% else %}
+                    <img src="https://i.pravatar.cc/150?u={{ user.username }}"
+                         alt="Avatar"
+                         class="rounded-circle border border-3 border-white shadow-sm"
+                         width="110" height="110">
+                {% endif %}
+                <span class="position-absolute bottom-0 end-0 translate-middle p-2 bg-success border border-light rounded-circle"></span>
+            </div>
+
+            <!-- نام و نقش -->
+            <h5 class="fw-bold mb-1">
+                {{ user.get_full_name|default:user.username }}
+            </h5>
+
+            <p class="text-muted small mb-2">
+                @{{ user.username }}
+            </p>
+
+            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary mb-3">
+                {{ user.get_role_display }}
+            </span>
+
+            <!-- فرم آپلود تصویر پروفایل -->
+            <form method="post"
+                  enctype="multipart/form-data"
+                  class="mt-2 mb-3 d-flex flex-column align-items-stretch"
+                  action="{% url 'accounts:profile_upload_image' %}">
+                {% csrf_token %}
+
+                <label for="profile_image_upload" class="form-label small text-muted mb-1">
+                    انتخاب تصویر جدید پروفایل
+                </label>
+
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="fas fa-image text-muted"></i>
+                    </span>
+                    <input type="file"
+                           name="profile_image"
+                           id="profile_image_upload"
+                           class="form-control form-control-sm border-start-0"
+                           accept="image/jpeg, image/png, image/gif"
+                           required>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-outline-primary btn-sm rounded-pill w-100">
+                    <i class="fas fa-upload ms-1"></i>
+                    آپلود تصویر جدید
+                </button>
+
+                <small class="text-muted mt-2">
+                    فرمت‌های مجاز: JPG, PNG, GIF
+                </small>
+            </form>
+
+            <!-- اطلاعات تکمیلی -->
+            <div class="border-top pt-3 mt-2 text-muted small">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>ایمیل</span>
+                    <span class="fw-semibold">{{ user.email|default:"ثبت نشده" }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>عضویت از</span>
+                    <span class="fw-semibold">
+                        {{ user.date_joined|date:"Y/m/d" }}
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+        <!-- فرم ویرایش اطلاعات / سمت راست در دسکتاپ -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header border-0 bg-white pt-4 pb-2 px-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="mb-1">اطلاعات حساب کاربری</h4>
+                            <p class="text-muted small mb-0">
+                                در صورت نیاز، اطلاعات خود را ویرایش کرده و سپس روی «ذخیره تغییرات» کلیک کنید.
+                            </p>
+                        </div>
+                        <span class="d-none d-md-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+                              style="width: 44px; height: 44px;">
+                        <i class="fas fa-user-edit fs-5"></i>
+                    </span>
+                    </div>
+                </div>
+
+                <div class="card-body px-4 pb-4 pt-2">
+                    <!-- فرم ویرایش -->
+                    <form method="post" action ="{% url 'accounts:profile' %}">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">نام</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="first_name"
+                                       name="first_name"
+                                       value="{{ user.first_name }}"
+                                       placeholder="نام خود را وارد کنید">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">نام خانوادگی</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="last_name"
+                                       name="last_name"
+                                       value="{{ user.last_name }}"
+                                       placeholder="نام خانوادگی خود را وارد کنید">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">نام کاربری</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="username"
+                                       name="username"
+                                       value="{{ user.username }}"
+                                       placeholder="نام کاربری">
+                                <div class="form-text">
+                                    از حروف انگلیسی و اعداد استفاده کنید.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">ایمیل</label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       name="email"
+                                       value="{{ user.email }}"
+                                       placeholder="you@example.com">
+                            </div>
+
+                            {# اگر فیلدهای اضافی مثل phone دارید، می‌تونی اینجا اضافه کنی #}
+
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">شماره تماس</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="phone_number"
+                                       name="phone_number"
+                                       value="{{ user.phone_number|default:"" }}"
+                                       placeholder="09xxxxxxxxx">
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <small class="text-muted">
+                                در صورت تغییر اطلاعات، حتماً دکمه‌ی «ذخیره تغییرات» را بزنید.
+                            </small>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                <i class="fas fa-save ms-1"></i>
+                                ذخیره تغییرات
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

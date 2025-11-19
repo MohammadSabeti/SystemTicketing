@@ -142,3 +142,5 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'accounts.UserProfile'
+LOGIN_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/'
