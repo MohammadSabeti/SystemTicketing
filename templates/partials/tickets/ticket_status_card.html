@@ -1,0 +1,81 @@
+{% load static %}
+{% load ticket_tags %}
+{% load humanize %}
+<div class="card shadow-lg border-0 rounded-4">
+    <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+        <h6 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                    <span class="d-inline-flex justify-content-center align-items-center
+                     rounded-circle bg-info bg-opacity-10 text-info"
+                          style="width: 32px; height: 32px;">
+                        <i class="fas fa-stream"></i>
+                    </span>
+            <span>روند وضعیت تیکت</span>
+        </h6>
+    </div>
+    <div class="card-body p-4">
+        <ul class="list-unstyled mb-0 d-flex flex-column gap-3 small">
+
+            <!-- رویداد ایجاد تیکت -->
+            <li class="d-flex gap-2">
+                        <span class="d-inline-flex justify-content-center align-items-center
+                         rounded-circle bg-success bg-opacity-10 "
+                              style="width: 28px; height: 28px;color: {% render_status_color 'open' %}">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                <div>
+                    <div class="text-muted mb-1">
+                        {{ ticket.created_at|naturalday  }}
+                    </div>
+                    <div class="fw-semibold">
+                        تیکت ایجاد شد
+                    </div>
+                    <div class="text-muted">
+                        <span >وضعیت اولیه :</span>
+                        <span style="color: {% render_status_color 'open' %}">
+                            {% render_status_text 'open' %} </span>
+
+                    </div>
+                </div>
+            </li>
+
+            <!-- لاگ‌های تغییر وضعیت -->
+            {% for log in ticket.status_logs.all %}
+                <li class="d-flex gap-2">
+                            <span class="d-inline-flex justify-content-center 
+                            align-items-center rounded-circle bg-secondary  bg-opacity-10 "
+                                  style="width: 28px; height: 28px;color: {% render_status_color log.new_status %}">
+                                <i class="fas fa-exchange-alt"></i>
+                            </span>
+                    <div>
+                        <div class="text-muted mb-1">
+                            {{ log.created_at|naturalday }}
+                        </div>
+                        <div class="fw-semibold">
+                            تغییر وضعیت از
+                            <span style="color: {% render_status_color log.old_status %}">
+                            {% render_status_text log.old_status %} </span>
+                            به
+                            <span style="color: {% render_status_color log.new_status %}">
+                            {% render_status_text log.new_status %} </span>
+                        </div>
+                        <div class="text-muted">
+                            توسط
+                            <strong>{{ log.changed_by.get_full_name|default:log.changed_by.username }}</strong>
+                        </div>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="d-flex gap-2">
+                            <span class="d-inline-flex justify-content-center align-items-center
+                             rounded-circle bg-light text-muted"
+                                  style="width: 28px; height: 28px;">
+                                <i class="fas fa-info"></i>
+                            </span>
+                    <div class="text-muted">
+                        هنوز تغییری در وضعیت این تیکت ثبت نشده است.
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

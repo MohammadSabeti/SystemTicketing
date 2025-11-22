@@ -1,0 +1,111 @@
+{% load static %}
+
+<div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form method="post"
+                  action="#"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-content border-0 rounded-4 shadow-lg">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center gap-2">
+                        <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary
+                        bg-opacity-10 text-primary"
+                              style="width: 36px; height: 36px;">
+                            <i class="fas fa-reply"></i>
+                        </span>
+                            <div>
+                                <h5 class="modal-title fw-bold mb-1">
+                                    ارسال پیام
+                                </h5>
+                                <small class="text-muted">پاسخ خود را برای این تیکت بنویسید</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body py-3">
+                        <input type="hidden" name="parent_id" id="reply_parent_id">
+
+                        <div id="reply_to_info" class="mb-3 d-none">
+                            <div class="border rounded-3 bg-light px-3 py-2">
+                                <div class="d-flex align-items-start gap-2">
+                                    <!-- آیکن داخل دایره -->
+                                    <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+                                          style="width: 30px; height: 30px;">
+                <i class="fas fa-reply"></i>
+            </span>
+
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small class="text-muted">
+                                                در پاسخ به:
+                                                <strong id="reply_to_author"></strong>
+                                            </small>
+
+                                            <button type="button"
+                                                    class="btn btn-outline-secondary btn-sm rounded-pill text-muted p-2"
+                                                    id="clear_reply_target">
+                                                لغو ریپلای
+                                            </button>
+                                        </div>
+
+                                        <!-- متن پیام اصلی (خلاصه) -->
+                                        <div class="small text-muted"
+                                             id="reply_to_snippet"
+                                             style="max-height: 4.5rem;
+                            overflow: hidden;
+                            line-height: 1.6;
+                            border-right: 3px solid rgba(13,110,253,0.25);
+                            padding-right: .5rem;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label for="reply_message" class="form-label small text-muted mb-1">
+                            متن پیام
+                        </label>
+                        <textarea id="reply_message"
+                                  name="message"
+                                  class="form-control rounded-3 shadow-sm"
+                                  rows="5"
+                                  placeholder="پیام خود را وارد کنید..."
+                                  required
+                                  style="border: 2px solid rgba(0,0,0,0.08); resize: none;"></textarea>
+                        <small class="text-muted mt-2 d-block">
+                            حداکثر ۵۰۰۰ کاراکتر
+                        </small>
+
+                        <div class="mt-3">
+                            <label for="reply_attachment" class="form-label small text-muted mb-1">
+                                فایل/تصویر پیوست (اختیاری)
+                            </label>
+                            <input type="file"
+                                   class="form-control form-control-sm"
+                                   id="reply_attachment"
+                                   name="attachment"
+                                   accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.zip,.rar,.doc,.docx">
+                            <div class="form-text small text-muted">
+                                فرمت‌های مجاز: JPG, PNG, PDF, ZIP, RAR, DOC – حداکثر حجم: ۱۰ مگابایت.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button"
+                                class="btn btn-outline-secondary rounded-pill px-4"
+                                data-bs-dismiss="modal">
+                            لغو
+                        </button>
+                        <button type="submit"
+                                class="btn btn-primary rounded-pill px-4">
+                            <i class="fas fa-paper-plane ms-1"></i>
+                            ارسال پیام
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>

@@ -1,6 +1,8 @@
 {% load static %}
-<header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-    <div class="container-fluid px-4">
+<header class="navbar navbar-expand-lg sticky-top
+ navbar-light bg-white shadow-sm 
+ sticky-top border-bottom">
+    <div class="container-fluid px-3 px-md-4">
         <!-- لوگو و نام سیستم -->
         <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2"
            href="{% url 'tickets:ticket_list' %}">
@@ -8,12 +10,15 @@
                   style="width: 38px; height: 38px;">
                 <i class="fas fa-headset fs-5"></i>
             </span>
-            <span class="fs-5">تیکتینگ</span>
+            <div class="d-flex flex-column">
+                <span class="fs-5">تیکتینگ</span>
+                <small class="text-muted d-none d-sm-inline">سیستم مدیریت و پشتیبانی تیکت‌ها</small>
+            </div>
         </a>
 
         <!-- دکمه برای نمایش/پنهان کردن سایدبار در موبایل -->
         {% if user.is_authenticated %}
-            <button class="btn btn-light d-md-none ms-auto me-2 rounded-circle border-0"
+            <button class="btn btn-light d-md-none ms-auto me-2 rounded-circle border-0 shadow-sm"
                     type="button"
                     data-bs-toggle="offcanvas"
                     data-bs-target="#sidebarOffcanvas"
@@ -22,31 +27,37 @@
             </button>
         {% endif %}
 
+        <button class="navbar-toggler border-0 ms-2" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- این بخش خالی می‌ماند تا آیتم‌ها به سمت راست بروند -->
+        
             <ul class="navbar-nav me-auto"></ul>
 
-            <!-- پروفایل کاربر و دکمه‌ها -->
+
             <ul class="navbar-nav align-items-center gap-2">
                 {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle p-0" href="#" id="profileDropdown"
                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="d-flex align-items-center gap-2 rounded-pill bg-light px-2 px-md-3 py-1">
+                            <div class="d-flex align-items-center gap-2 rounded-pill bg-light px-2 px-md-3 py-1 shadow-sm">
                                 <div class="position-relative">
                                     {% if user.profile_image %}
                                         <img src="{{ user.profile_image.url }}"
                                              alt="Avatar"
-                                             class="rounded-circle border border-2 border-light shadow-sm"
-                                             width="50" height="50">
+                                             class="rounded-circle border border-2 border-white shadow-sm"
+                                             width="46" height="46">
                                     {% else %}
                                         <img src="https://i.pravatar.cc/150?u={{ user.username }}"
                                              alt="Avatar"
-                                             class="rounded-circle border border-2 border-light shadow-sm"
-                                             width="50" height="50">
+                                             class="rounded-circle border border-2 border-white shadow-sm"
+                                             width="46" height="46">
                                     {% endif %}
                                     <span class="position-absolute bottom-0 end-0 translate-middle p-1
-                                    bg-success border border-light rounded-circle d-none d-md-inline-block"></span>
+                                            bg-success border border-light rounded-circle d-none d-md-inline-block"></span>
                                 </div>
                                 <div class="d-none d-md-flex flex-column text-end">
                                     <span class="fw-semibold small">
@@ -76,30 +87,26 @@
                                     </span>
                                 </div>
                             </li>
-                            <li>
-                                <hr class="dropdown-divider my-2">
-                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-2 py-2"
                                    href="{% url 'accounts:profile' %}">
                                     <span class="d-inline-flex justify-content-center align-items-center
-                                     rounded-circle bg-light text-muted"
-                                          style="width: 38px;">
+                                                 rounded-circle bg-light text-muted"
+                                          style="width: 38px; height: 38px;">
                                         <i class="fas fa-user-cog"></i>
                                     </span>
                                     <span>پروفایل</span>
                                 </a>
                             </li>
-                            <li>
-                                <hr class="dropdown-divider my-2">
-                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
                             <li>
                                 <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
                                     {% csrf_token %}
                                     <button class="dropdown-item d-flex align-items-center gap-2 text-danger py-2"
                                             type="submit">
                                         <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-danger bg-opacity-10 text-danger"
-                                              style="width: 28px; height: 28px;">
+                                              style="width: 30px; height: 30px;">
                                             <i class="fas fa-sign-out-alt"></i>
                                         </span>
                                         <span>خروج</span>

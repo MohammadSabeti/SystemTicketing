@@ -2,7 +2,11 @@
 
 /* 1. ایمپورت فونت و تعریف متغیرهای رنگی */
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
-
+html, body {
+        max-width: 100%;
+        max-height: 100%;
+        overflow-x: hidden;
+    }
 :root {
     --font-family-sans-serif: 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --bs-primary: #4361ee;
@@ -60,12 +64,12 @@ a:hover {
     font-size: 1.2rem;
 }
 
-.sidebar {
-    background-color: var(--bg-surface);
-    height: calc(100vh - 56px); /* ارتفاع کامل صفحه منهای نوبار */
-    border-left: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
-}
+/*.sidebar {*/
+/*    background-color: var(--bg-surface);*/
+/*    max-height: 100%;*/
+/*    border-left: 1px solid var(--border-color);*/
+/*    box-shadow: var(--shadow-sm);*/
+/*}*/
 
 .sidebar .nav-link {
     color: var(--text-secondary);
@@ -263,7 +267,7 @@ a:hover {
     border-left: none; /* حذف بوردر قبلی */
     border-right: 1px solid var(--border-color); /* بوردر در سمت راست */
     position: fixed;
-    top: 56px; /* فاصله از بالای صفحه به اندازه ارتفاع نوبار */
+    top: 0;
     right: 0;
     bottom: 0;
     padding-top: 1rem;
@@ -272,6 +276,7 @@ a:hover {
 }
 .sidebar-content {
     padding: 0 1rem;
+    margin-top: 50%;
 }
 
 /* استایل عنوان‌های دسته‌بندی در سایدبار */
@@ -355,3 +360,25 @@ main {
     }
 }
 
+
+.transition-all {
+    transition: all 0.25s ease;
+}
+.hover-effect:hover {
+    background-color: #f8f9fa !important;
+    transform: translateX(-2px);
+}
+
+/* استایل کمی بهتر برای لینک‌های سایدبار وقتی active هستند */
+.sidebar .nav-link.active {
+    background-color: rgba(13,110,253,0.08);
+    color: #0d6efd;
+    box-shadow: 0 0.25rem 0.5rem rgba(15, 23, 42, 0.08);
+}
+.sidebar .nav-link.active span.text-muted {
+    color: #0d6efd !important;
+}
+
+.main-footer {
+    font-family: inherit;
+}

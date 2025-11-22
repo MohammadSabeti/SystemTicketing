@@ -1,65 +1,153 @@
-<!-- templates/tickets/ticket_form.html -->
 {% extends 'base.html' %}
 {% load static %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="fas fa-edit"></i> {{ title }}</h5>
-            </div>
-            <div class="card-body">
-                <form method="post" novalidate>
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-                        <label for="{{ form.title.id_for_label }}" class="form-label">عنوان</label>
-                        {{ form.title }}
-                        {% if form.title.errors %}
-                        <div class="text-danger">{{ form.title.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.description.id_for_label }}" class="form-label">توضیحات</label>
-                        {{ form.description }}
-                        {% if form.description.errors %}
-                        <div class="text-danger">{{ form.description.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.priority.id_for_label }}" class="form-label">اولویت</label>
-                            {{ form.priority }}
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                    <!-- هدر کارت -->
+                    <div class="card-header bg-gradient-primary text-white border-0 py-4 px-4">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <div>
+                                <h4 class="mb-1">
+                                    {% if update %}
+                                        ویرایش اطلاعات تیکت
+                                    {% else %}
+                                        فرم ثبت تیکت
+                                    {% endif %}
+                                </h4>
+                                <p class="text-muted small mb-0">
+                                    {% if update %}
+                                        در صورت نیاز، اطلاعات خود را ویرایش کرده و سپس روی «ذخیره تغییرات» کلیک کنید.
+                                    {% else %}
+                                        قبل از ثبت، اطلاعات تیکت را یک ‌بار دیگر بررسی کنید.
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <span class="d-none d-md-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+                                  style="width: 44px; height: 44px;">
+                                <i class="fas fa-edit fs-5"></i>
+                            </span>
                         </div>
-                        {% if user.is_admin %}
-                        <div class="col-md-6">
-                            <label for="{{ form.status.id_for_label }}" class="form-label">وضعیت</label>
-                            {{ form.status }}
-                        </div>
-                        {% endif %}
                     </div>
 
-                    {% if user.is_admin and form.assigned_to %}
-                    <div class="mb-3">
-                        <label for="{{ form.assigned_to.id_for_label }}" class="form-label">ارجاع به پشتیبان</label>
-                        {{ form.assigned_to }}
-                    </div>
-                    {% endif %}
+                    <!-- بدن کارت -->
+                    <div class="card-body p-4 p-md-5">
+                        <form method="post" novalidate class="needs-validation">
+                            {% csrf_token %}
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{% url 'accounts:ticket_list' %}" class="btn btn-secondary">بازگشت</a>
-                        <button type="submit" class="btn btn-success">
-                            {% if update %}<i class="fas fa-save"></i> به‌روزرسانی{% else %}<i class="fas fa-plus"></i> ایجاد{% endif %}
-                        </button>
+                            <!-- عنوان -->
+                            <div class="mb-4">
+                                <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold mb-2">
+                                    <i class="fas fa-heading text-primary me-1"></i>
+                                    عنوان تیکت
+                                </label>
+                                <div class="input-group input-group-lg">
+                                <span class="input-group-text rounded-start-3 bg-light border-primary border-end-0">
+                                    <i class="fas fa-heading text-primary"></i>
+                                </span>
+                                    <input type="text"
+                                           class="form-control rounded-end-3 shadow-sm border-start-0"
+                                           id="{{ form.title.id_for_label }}"
+                                           name="{{ form.title.name }}"
+                                           value="{{ form.title.value|default:'' }}"
+                                           placeholder="مثلاً: مشکل در ورود به حساب کاربری"
+                                           required>
+                                </div>
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback d-block mt-2">
+                                        {{ form.title.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- توضیحات -->
+                            <div class="mb-4">
+                                <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold mb-2">
+                                    <i class="fas fa-file-alt text-primary me-1"></i>
+                                    توضیحات
+                                </label>
+                                <div class="form-floating">
+                                <textarea class="form-control rounded-3 shadow-sm border"
+                                          id="{{ form.description.id_for_label }}"
+                                          name="{{ form.description.name }}"
+                                          style="height: 160px; resize: vertical;"
+                                          placeholder="جزئیات مشکل خود را توضیح دهید..."
+                                          required>{{ form.description.value|default:'' }}</textarea>
+                                    <label for="{{ form.description.id_for_label }}" class="text-muted">
+                                        جزئیات مشکل خود را توضیح دهید...
+                                    </label>
+                                </div>
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block mt-2">
+                                        {{ form.description.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <!-- اولویت -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label for="{{ form.priority.id_for_label }}" class="form-label fw-semibold mb-2">
+                                        <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                                        اولویت
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                    <span class="input-group-text rounded-start-3 bg-light border-primary border-end-0">
+                                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    </span>
+                                        <select class="form-select rounded-end-3 shadow-sm border-start-0"
+                                                id="{{ form.priority.id_for_label }}"
+                                                name="{{ form.priority.name }}"
+                                                required>
+                                            <option value="" disabled selected>انتخاب اولویت</option>
+                                            {% for value, label in form.priority.field.choices %}
+                                                <option value="{{ value }}"
+                                                        {% if form.priority.value == value %}selected{% endif %}>
+                                                    {{ label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% if form.priority.errors %}
+                                        <div class="invalid-feedback d-block mt-2">
+                                            {{ form.priority.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- دکمه‌های اقدام -->
+                            <div class="d-flex flex-column gap-3 mt-5 pt-4 border-top">
+                                <div class="d-flex gap-2 justify-content-md-end">
+                                    <a href="{% url 'tickets:ticket_list' %}"
+                                       class="btn btn-outline-secondary rounded-pill px-4 py-2 shadow-sm">
+                                        <i class="fas fa-arrow-right ms-1"></i>
+                                        بازگشت
+                                    </a>
+                                    <button type="submit"
+                                            class="btn btn-primary rounded-pill px-5 py-2 shadow-lg position-relative overflow-hidden">
+                                        <span>
+                                            {% if update %}
+                                                <i class="fas fa-save ms-1"></i>
+                                                به‌روزرسانی تیکت
+                                            {% else %}
+                                                <i class="fas fa-plus ms-1"></i>
+                                                ایجاد تیکت
+                                            {% endif %}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

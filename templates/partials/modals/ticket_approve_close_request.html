@@ -1,0 +1,73 @@
+{% load static %}
+
+<div class="modal fade" id="approveCloseRequestModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <form method="post" action="{% url 'tickets:approve_close_request' ticket.id %}">
+                    {% csrf_token %}
+                    <div class="modal-content border-0 rounded-4 shadow-lg">
+
+                        <div class="modal-header border-0 pb-0">
+                            <div class="d-flex align-items-center gap-2">
+                            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-success bg-opacity-10 text-success"
+                                  style="width: 36px; height: 36px;">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                                <div>
+                                    <h5 class="modal-title fw-bold mb-1">
+                                        تأیید بستن تیکت
+                                    </h5>
+                                    <small class="text-muted">
+                                        این عملیات وضعیت تیکت را به حالت بسته (Closed) تغییر می‌دهد.
+                                    </small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body pt-3">
+                            {% with cr=ticket.close_request %}
+                                {% if cr %}
+                                    <div class="alert alert-warning bg-warning bg-opacity-10 border-0 rounded-3 small mb-0">
+                                        <div class="d-flex gap-2">
+                                            <i class="fas fa-info-circle mt-1"></i>
+                                            <div>
+                                                <div class="mb-1">
+                                                    درخواست بستن این تیکت توسط
+                                                    <strong>{{ cr.requested_by.get_full_name|default:cr.requested_by.username }}</strong>
+                                                    در تاریخ
+                                                    <strong>{{ cr.created_at|date:'Y/m/d - H:i' }}</strong>
+                                                    ثبت شده است.
+                                                </div>
+                                                <span class="text-muted">
+                                                با تأیید این درخواست، تیکت بسته شده و امکان ارسال پیام جدید محدود می‌شود.
+                                            </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-secondary bg-secondary bg-opacity-10 border-0 rounded-3 small mb-0">
+                                        <i class="fas fa-info-circle ms-1"></i>
+                                        در حال حاضر هیچ درخواست بستن فعالی برای این تیکت ثبت نشده است.
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="button"
+                                    class="btn btn-light rounded-pill px-4"
+                                    data-bs-dismiss="modal">
+                                لغو
+                            </button>
+                            <button type="submit"
+                                    class="btn btn-success rounded-pill px-4"
+                                    {% if not ticket.close_request or ticket.close_request.approved %}disabled{% endif %}>
+                                <i class="fas fa-check ms-1"></i>
+                                تأیید و بستن تیکت
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>

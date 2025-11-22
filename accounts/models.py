@@ -21,5 +21,18 @@ class UserProfile(AbstractUser):
                                       blank=True, null=True)
     phone_number = models.CharField(max_length=11, blank=True, null=True)
 
+    @property
+    def is_admin(self):
+        return self.role==RoleChoices.ADMIN
+
+    @property
+    def is_support(self):
+        return self.role==RoleChoices.SUPPORT
+
+    @property
+    def is_user(self):
+        return self.role==RoleChoices.USER
+
+
     def __str__(self):
         return f"{self.username} - {self.role}"

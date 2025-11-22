@@ -1,0 +1,126 @@
+{% load static %}
+{% load ticket_tags %}
+{% load humanize %}
+<div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+    <!-- هدر تیکت -->
+    <div class="card-header border-0 bg-white pt-4 pb-2 px-4">
+        <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+		<span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+              style="width: 40px; height: 40px;">
+			<i class="fas fa-ticket-alt"></i>
+		</span>
+            <div class="flex-grow-1">
+                <h3 class="fw-bold mb-2">{{ ticket.title }}</h3>
+                <small class="text-muted">
+                    <i class="fas fa-id-card me-1"></i>
+                    تیکت #{{ ticket.id }}
+                </small>
+            </div>
+            <span class="badge rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-sm"
+                  style="background:
+                          {% if ticket.priority == 'critical' %}linear-gradient(135deg, #dc3545, #c22737)
+                          {% elif ticket.priority == 'high' %}linear-gradient(135deg, #fd7e14, #e06a00)
+                          {% elif ticket.priority == 'medium' %}linear-gradient(135deg, #0d6efd, #0b58df)
+                          {% else %}linear-gradient(135deg, #6c757d, #5a6268){% endif %};
+                          color: white;">
+			<i class="fas fa-flag ms-1"></i>
+			{{ ticket.get_priority_display }}
+		</span>
+        </div>
+    </div>
+
+    <!-- محتوای اصلی -->
+    <div class="card-body p-4">
+        <!-- توضیحات -->
+        <div class="mb-4 pb-3 border-bottom">
+            <h6 class="fw-semibold text-primary mb-2">
+                <i class="fas fa-file-alt me-2"></i>
+                توضیحات
+            </h6>
+            <div class="bg-light p-4 rounded-3"
+                 style="line-height: 1.8; border-left: 4px solid var(--bs-primary);">
+                {{ ticket.description|linebreaks }}
+            </div>
+        </div>
+
+        <!-- اطلاعات تیکت -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light">
+                    <div class="text-muted small fw-semibold mb-1">
+
+                        <i class="fas fa-info-circle me-2 text-success"></i>
+                        وضعیت
+                    </div>
+                    {% render_status_badge ticket.status %}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light">
+                    <div class="text-muted small fw-semibold mb-1">
+                        <i class="fas fa-calendar-day me-1 text-info"></i>
+                        تاریخ ایجاد
+                    </div>
+                    <div class="fw-semibold">{{ ticket.created_at|naturalday }}</div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light">
+                    <div class="text-muted small fw-semibold mb-1">
+                        <i class="fas fa-user me-1 text-primary"></i>
+                        ایجاد شده توسط
+                    </div>
+                    <div class="fw-semibold">
+                        <i class="fas fa-user-circle me-1"></i>
+                        {{ ticket.created_by.get_full_name|default:ticket.created_by.username }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light">
+                    <div class="text-muted small fw-semibold mb-1">
+                        <i class="fas fa-user-plus me-1 text-warning"></i>
+                        ارجاع به
+                    </div>
+                    <div class="fw-semibold {% if not ticket.assigned_to %}text-muted{% endif %}">
+                        {% if ticket.assigned_to %}
+                            <i class="fas fa-user-circle me-1"></i>
+                            {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+                        {% else %}
+                            <span class="text-muted">تعیین نشده</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- فوتر - دکمه‌ها -->
+    <div class="card-footer bg-light border-top p-3">
+        {% if user == ticket.created_by or user.is_admin %}
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a href="{% url 'tickets:ticket_edit' ticket.id %}"
+                   class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center gap-1">
+                    <i class="fas fa-edit ms-1"></i>
+                    <span>ویرایش</span>
+                </a>
+
+                <!-- دکمه حذف که مودال را باز می‌کند -->
+                <button type="button"
+                        class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center gap-1"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteTicketModal"
+                        data-ticket-title="{{ ticket.title|default:'بدون عنوان' }}"
+                        data-delete-url="{% url 'tickets:ticket_delete' ticket.id %}"
+                        title="حذف">
+                    <i class="fas fa-trash-alt ms-1"></i>
+                    <span>حذف</span>
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>

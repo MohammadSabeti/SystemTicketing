@@ -1,0 +1,58 @@
+{% load static %}
+
+<div class="modal fade" id="deleteTicketModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-danger bg-opacity-10 text-danger"
+                          style="width: 36px; height: 36px;">
+                        <i class="fas fa-trash-alt"></i>
+                    </span>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-1">
+                            حذف تیکت : <span id="deleteTicketTitle"></span>
+                        </h5>
+                        <small class="text-muted">
+                            این عملیات قابل بازگردانی نیست.
+                        </small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body pt-3">
+                <div class="alert alert-danger bg-danger bg-opacity-10 border-0 rounded-3 small mb-0">
+                    <div class="d-flex gap-2">
+                        <i class="fas fa-exclamation-triangle mt-1"></i>
+                        <div>
+                            آیا از حذف این تیکت مطمئن هستید؟
+                            <br>
+                            <span class="text-muted">
+                                تمام پیام‌ها و اطلاعات مرتبط با این تیکت حذف خواهند شد.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pt-0">
+                <button type="button"
+                        class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">
+                    لغو
+                </button>
+
+                <form method="post" id="deleteTicketForm" action="" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">
+                        <i class="fas fa-trash ms-1"></i>
+                        تأیید حذف
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

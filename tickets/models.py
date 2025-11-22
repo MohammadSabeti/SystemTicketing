@@ -71,7 +71,7 @@ class TicketMessage(models.Model):
         related_name='replies'
     )
 
-    ticket = models.ForeignKey(Ticket, related_name="messages",
+    ticket = models.ForeignKey(Ticket, related_name="ticket_messages",
                                on_delete=models.CASCADE)
 
     sender = models.ForeignKey(User, on_delete=models.CASCADE)

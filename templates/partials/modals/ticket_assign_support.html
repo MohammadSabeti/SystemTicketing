@@ -1,0 +1,73 @@
+{% load static %}
+
+<div class="modal fade" id="assignSupportModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <form method="post" action="{% url 'tickets:assign_support' ticket.id %}">
+                    {% csrf_token %}
+                    <div class="modal-content border-0 rounded-4 shadow-lg">
+
+                        <div class="modal-header border-0 pb-0">
+                            <div class="d-flex align-items-center gap-2">
+                            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+                                  style="width: 36px; height: 36px;">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                                <div>
+                                    <h5 class="modal-title fw-bold mb-1">
+                                        تخصیص کاربر پشتیبان
+                                    </h5>
+                                    <small class="text-muted">
+                                        یک کاربر پشتیبان برای این تیکت انتخاب کنید.
+                                    </small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body pt-3">
+                            {% if support_users %}
+                                <label for="assigned_to" class="form-label small text-muted mb-1">
+                                    انتخاب کاربر پشتیبان
+                                </label>
+                                <select id="assigned_to"
+                                        name="assigned_to"
+                                        class="form-select rounded-3 shadow-sm"
+                                        required>
+                                    <option value="">یک کاربر را انتخاب کنید...</option>
+                                    {% for su in support_users %}
+                                        <option value="{{ su.id }}"
+                                                {% if ticket.assigned_to_id == su.id %}selected{% endif %}>
+                                            {{ su.get_full_name|default:su.username }}
+                                            {% if su.get_role_display %} - {{ su.get_role_display }}{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text small text-muted mt-1">
+                                    فقط کاربران پشتیبان در این لیست نمایش داده می‌شوند.
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning bg-warning bg-opacity-10 border-0 rounded-3 small mb-0">
+                                    <i class="fas fa-info-circle ms-1"></i>
+                                    هیچ کاربر پشتیبانی برای تخصیص در دسترس نیست.
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="button"
+                                    class="btn btn-light rounded-pill px-4"
+                                    data-bs-dismiss="modal">
+                                لغو
+                            </button>
+                            <button type="submit"
+                                    class="btn btn-primary rounded-pill px-4"
+                                    {% if not support_users %}disabled{% endif %}>
+                                <i class="fas fa-save ms-1"></i>
+                                ذخیره تغییرات
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>

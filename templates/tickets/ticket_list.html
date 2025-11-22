@@ -1,140 +1,293 @@
-<!-- templates/tickets/ticket_list.html -->
+{# templates/tickets/ticket_list.html #}
 {% extends 'base.html' %}
 {% load static %}
+{% load ticket_tags %}
+{% load humanize %}
 
 {% block title %}لیست تیکت‌ها{% endblock %}
 
 {% block content %}
-<h2><i class="fas fa-ticket-alt"></i> تیکت‌های من</h2>
 
-<!-- نمایش تعداد -->
-<p class="text-muted">تعداد کل تیکت‌ها: <strong>{{ tickets.count }}</strong></p>
+    <div class="container-fluid">
 
-<!-- دکمه ایجاد تیکت -->
-<div class="mb-3">
-    <a href="{% url 'tickets:ticket_form' %}" class="btn btn-success">
-        <i class="fas fa-plus"></i> ایجاد تیکت جدید
-    </a>
-</div>
-
-<!-- فیلتر و سورت سریع -->
-<form method="GET" class="row g-3 mb-4">
-    <div class="col-md-3">
-        <select name="status" class="form-select">
-            <option value="">همه وضعیت‌ها</option>
-            <option value="open" {% if request.GET.status == 'open' %}selected{% endif %}>باز</option>
-            <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>در حال پیگیری</option>
-            <option value="closed" {% if request.GET.status == 'closed' %}selected{% endif %}>بسته شده</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <select name="priority" class="form-select">
-            <option value="">همه اولویت‌ها</option>
-            <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>کم</option>
-            <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>متوسط</option>
-            <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>زیاد</option>
-            <option value="critical" {% if request.GET.priority == 'critical' %}selected{% endif %}>بحرانی</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <select name="sort" class="form-select">
-            <option value="-created_at">جدیدترین</option>
-            <option value="created_at">قدیمی‌ترین</option>
-            <option value="priority">بر اساس اولویت</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <button type="submit" class="btn btn-primary w-100">فیلتر</button>
-    </div>
-</form>
-
-<!-- جدول تیکت‌ها -->
-<div class="table-responsive">
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>عنوان</th>
-                <th>اولویت</th>
-                <th>وضعیت</th>
-                <th>سازنده</th>
-                <th>ارجاع به</th>
-                <th>تاریخ ایجاد</th>
-                <th>عملیات</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ticket in tickets %}
-            <tr>
-                <td>
-                    <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none">
-                        {{ ticket.title|truncatechars:50 }}
-                    </a>
-                </td>
-                <td>
-                    <span class="
-                        {% if ticket.priority == 'critical' %}text-danger fw-bold
-                        {% elif ticket.priority == 'high' %}text-warning
-                        {% elif ticket.priority == 'medium' %}text-primary
-                        {% else %}text-secondary{% endif %}
-                    ">
-                        {{ ticket.get_priority_display }}
+        <!-- کارت هدر + فیلترها + اکشن اصلی -->
+        <div class="card shadow-lg border-0 rounded-4 mb-4 overflow-hidden">
+            <!-- هدر کارت -->
+            <div class="card-header bg-white border-0 pt-4 pb-2 px-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+                          style="width: 40px; height: 40px;">
+                        <i class="fas fa-ticket-alt"></i>
                     </span>
-                </td>
-                <td>
-                    <span class="badge 
-                        {% if ticket.status == 'open' %}bg-secondary
-                        {% elif ticket.status == 'in_progress' %}bg-primary
-                        {% else %}bg-success{% endif %}
-                    ">
-                        {{ ticket.get_status_display }}
-                    </span>
-                </td>
-                <td>{{ ticket.created_by.username }}</td>
-                <td>{{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username|default:'-' }}</td>
-                <td>{{ ticket.created_at|date:'Y/m/d H:i' }}</td>
-                <td>
-                    <a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    {% if user == ticket.created_by or user.is_admin %}
-                    <a href="{% url 'ticket_edit' ticket.id %}" class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="{% url 'ticket_delete' ticket.id %}" class="btn btn-sm btn-outline-danger"
-                       onclick="return confirm('آیا مطمئنید این تیکت حذف شود؟')">
-                        <i class="fas fa-trash"></i>
-                    </a>
+                        <div>
+                            <h3 class="fw-bold mb-1">تیکت‌های من</h3>
+                            <small class="text-muted">
+                                مدیریت و پیگیری درخواست‌های پشتیبانی شما
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="text-end">
+                            <div class="small text-muted mb-1">تعداد کل تیکت‌ها</div>
+                            <div class="fw-bold">
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                                <i class="fas fa-list-ul ms-1"></i>
+                                {{ tickets.count }}
+                            </span>
+                            </div>
+                        </div>
+
+                        <!-- دکمه ایجاد تیکت جدید -->
+                        <a href="{% url 'tickets:ticket_form' %}"
+                           class="btn btn-primary rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-sm">
+                            <i class="fas fa-plus"></i>
+                            <span>ایجاد تیکت جدید</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بدنه کارت: فیلترها + جدول -->
+            <div class="card-body p-0">
+
+                <!-- فیلترها -->
+                <div class="px-4 pt-3 pb-3 border-bottom bg-light bg-opacity-50">
+                    <form method="GET" class="row g-2 g-md-3 align-items-end" id="ticketFilterForm">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label small text-muted mb-1">وضعیت</label>
+                            <select name="status" class="form-select form-select-sm rounded-3">
+                                <option value="">همه وضعیت‌ها</option>
+                                <option value="open" {% if request.GET.status == 'open' %}selected{% endif %}
+                                        style="color: {% render_status_color 'open' %}">
+                            <span>
+                            {% render_status_text 'open' %} 
+                            </span>
+                                </option>
+                                <option value="in_progress"
+                                        {% if request.GET.status == 'in_progress' %}selected{% endif %}
+                                        style="color: {% render_status_color 'in_progress' %}">
+                                <span>
+                            {% render_status_text 'in_progress' %} </span>
+                                </option>
+                                <option value="closed" {% if request.GET.status == 'closed' %}selected{% endif %}
+                                        style="color: {% render_status_color 'closed' %}">
+                                <span>
+                            {% render_status_text 'closed' %} </span>
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <label class="form-label small text-muted mb-1">اولویت</label>
+                            <select name="priority" class="form-select form-select-sm rounded-3">
+                                <option value="">همه اولویت‌ها</option>
+                                <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>کم
+                                </option>
+                                <option value="medium" {% if request.GET.priority == 'normal' %}selected{% endif %}>
+                                    نرمال
+                                </option>
+                                <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>زیاد
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <label class="form-label small text-muted mb-1">مرتب‌سازی</label>
+                            <select name="sort" class="form-select form-select-sm rounded-3">
+                                <option value="-created_at"
+                                        {% if request.GET.sort == '-created_at' or not request.GET.sort %}selected{% endif %}>
+                                    جدیدترین
+                                </option>
+                                <option value="created_at" {% if request.GET.sort == 'created_at' %}selected{% endif %}>
+                                    قدیمی‌ترین
+                                </option>
+                                <option value="priority" {% if request.GET.sort == 'priority' %}selected{% endif %}>بر
+                                    اساس اولویت
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <div class="d-flex flex-column flex-md-row gap-2">
+                                <button type="submit"
+                                        id="applyFiltersBtn"
+                                        class="btn btn-primary btn-sm w-100 rounded-pill d-flex justify-content-center align-items-center gap-2"
+                                        >
+                                    <i class="fas fa-filter"></i>
+                                    <span>اعمال فیلتر</span>
+                                </button>
+
+                                {% if request.GET.status or request.GET.priority or request.GET.sort %}
+                                    <a href="{% url 'tickets:ticket_list' %}"
+                                       class="btn btn-outline-secondary btn-sm w-100 w-md-auto rounded-pill d-flex align-items-center justify-content-center gap-2 px-3">
+                                        <i class="fas fa-undo"></i>
+                                        <span>حذف فیلتر</span>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- جدول -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr class="small text-muted">
+                            <th>عنوان</th>
+                            <th>اولویت</th>
+                            <th>وضعیت</th>
+                            <th>سازنده</th>
+                            <th>ارجاع به</th>
+                            <th>تاریخ ایجاد</th>
+                            <th class="text-center">عملیات</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for ticket in tickets %}
+                            <tr>
+                                <!-- عنوان -->
+                                <td style="max-width: 260px;">
+                                    <a href="{% url 'tickets:ticket_detail' ticket.id %}"
+                                       class="text-decoration-none fw-semibold text-dark">
+                                        {{ ticket.title|truncatechars:50 }}
+                                    </a>
+                                </td>
+
+                                <!-- اولویت -->
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-1
+{#                                        {% if ticket.priority == 'high' %} bg-danger bg-opacity-10 text-danger#}
+                                        {% if ticket.priority == 'high' %} bg-warning bg-opacity-10 text-warning
+                                        {% elif ticket.priority == 'normal' %} bg-primary bg-opacity-10 text-primary
+                                        {% else %} bg-secondary bg-opacity-10 text-secondary{% endif %}">
+                                        <i class="fas fa-flag ms-1"></i>
+                                        {{ ticket.get_priority_display }}
+                                    </span>
+                                </td>
+
+                                <!-- وضعیت (با template tag) -->
+                                <td>
+                                    {% render_status_badge ticket.status %}
+                                </td>
+
+                                <!-- سازنده -->
+                                <td class="small">
+                                    {{ ticket.created_by.get_full_name|default:ticket.created_by.username }}
+                                </td>
+
+                                <!-- ارجاع به -->
+                                <td class="small">
+                                    {{ ticket.assigned_to.get_full_name|default:'-' }}
+                                </td>
+
+                                <!-- تاریخ ایجاد -->
+                                <td class="small text-muted">
+                                    {{ ticket.created_at|naturalday }}
+                                </td>
+
+                                <!-- عملیات -->
+                                <td class="text-center">
+                                    <div class="d-inline-flex gap-1">
+                                        <!-- مشاهده -->
+                                        <a href="{% url 'tickets:ticket_detail' ticket.id %}"
+                                           class="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center"
+                                           title="مشاهده">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
+                                        <!-- ویرایش -->
+                                        <a href="{% url 'tickets:ticket_edit' ticket.id %}"
+                                           class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center"
+                                           title="ویرایش">
+                                            <i class="fas fa-pen-to-square"></i>
+                                        </a>
+
+                                        <!-- حذف با مودال -->
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteTicketModal"
+                                                data-ticket-title="{{ ticket.title|default:'بدون عنوان' }}"
+                                                data-delete-url="{% url 'tickets:ticket_delete' ticket.id %}"
+                                                title="حذف">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fs-3 d-block mb-2 opacity-50"></i>
+                                    هیچ تیکتی یافت نشد.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- پیجینیشن -->
+        <nav aria-label="Pagination">
+            {% if tickets.has_other_pages %}
+                <ul class="pagination justify-content-center">
+                    {% if tickets.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ tickets.previous_page_number }}">&laquo;</a>
+                        </li>
                     {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="text-center text-muted">هیچ تیکتی یافت نشد.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<!-- پیجینیشن -->
-<nav aria-label="Pagination">
-    {% if tickets.has_other_pages %}
-    <ul class="pagination justify-content-center">
-        {% if tickets.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page={{ tickets.previous_page_number }}">&laquo;</a></li>
-        {% endif %}
-        {% for num in tickets.paginator.page_range %}
-            {% if tickets.number == num %}
-            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-            {% elif num > tickets.number|add:'-3' and num < tickets.number|add:'3' %}
-            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% for num in tickets.paginator.page_range %}
+                        {% if tickets.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > tickets.number|add:'-3' and num < tickets.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if tickets.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ tickets.next_page_number }}">&raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
             {% endif %}
-        {% endfor %}
-        {% if tickets.has_next %}
-        <li class="page-item"><a class="page-link" href="?page={{ tickets.next_page_number }}">&raquo;</a></li>
-        {% endif %}
-    </ul>
-    {% endif %}
-</nav>
+        </nav>
 
+    </div>
+
+    <!-- مودال‌ها -->
+ {% if user == ticket.created_by or user.is_admin %}
+    <!-- مودال‌ حذف تیکت -->
+    {% include 'partials/modals/ticket_delete.html' %}
+     
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteModal = document.getElementById('deleteTicketModal');
+        if (!deleteModal) return;
+
+        const titleSpan = document.getElementById('deleteTicketTitle');
+        const deleteForm = document.getElementById('deleteTicketForm');
+
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            if (!button) return;
+
+            const ticketTitle = button.getAttribute('data-ticket-title');
+            const deleteUrl = button.getAttribute('data-delete-url');
+
+            if (titleSpan) titleSpan.textContent = ticketTitle;
+            if (deleteForm && deleteUrl) deleteForm.action = deleteUrl;
+        });
+    });
+</script>
 {% endblock %}

@@ -1,0 +1,58 @@
+{% load static %}
+
+<div class="modal fade" id="closeTicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form method="post" action="{% url 'tickets:close_request' ticket.id %}">
+                {% csrf_token %}
+                <div class="modal-content border-0 rounded-4 shadow-lg">
+
+                    <div class="modal-header border-0 pb-0">
+                        <div class="d-flex align-items-center gap-2">
+                        <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning bg-opacity-10 text-warning"
+                              style="width: 36px; height: 36px;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </span>
+                            <div>
+                                <h5 class="modal-title fw-bold mb-1">
+                                    درخواست بستن تیکت
+                                </h5>
+                                <small class="text-muted">
+                                    بعد از بستن، امکان ارسال پیام جدید در این تیکت محدود می‌شود.
+                                </small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body pt-3">
+                        <div class="alert alert-warning bg-warning bg-opacity-10 border-0 rounded-3 small mb-0">
+                            <div class="d-flex gap-2">
+                                <i class="fas fa-info-circle mt-1"></i>
+                                <div>
+                                    آیا از ارسال درخواست بستن این تیکت مطمئن هستید؟
+                                    <br>
+                                    <span class="text-muted">
+                                    در صورت نیاز، همیشه می‌توانید تیکت جدیدی ایجاد کنید.
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button"
+                                class="btn btn-light rounded-pill px-4"
+                                data-bs-dismiss="modal">
+                            لغو
+                        </button>
+                        <button type="submit"
+                                class="btn btn-warning rounded-pill px-4">
+                            <i class="fas fa-check-circle ms-1"></i>
+                            تأیید و ارسال درخواست
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>

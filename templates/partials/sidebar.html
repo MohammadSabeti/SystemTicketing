@@ -1,98 +1,129 @@
 {% load static %}
-<ul class="nav flex-column">
 
-    <li class="sidebar-heading d-flex align-items-center justify-content-between px-2 mb-1">
-    </li>
-    <!-- منوی اصلی -->
-    <li class="sidebar-heading d-flex align-items-center justify-content-between px-2 mb-1">
-        <span class="text-uppercase small text-muted fw-bold">منوی اصلی</span>
-    </li>
+<div class="card border-0 shadow-lg rounded-4 bg-white">
+    <div class="card-body p-2">
+        <ul class="nav flex-column">
 
-    <li class="nav-item mb-1">
-        <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3
-                   {% if request.path == '/tickets/' %}active{% endif %}"
-           href="{% url 'tickets:ticket_list' %}">
-            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
-                  style="width: 32px; height: 32px;">
-                <i class="fas fa-th-large"></i>
-            </span>
-            <div class="d-flex flex-column">
-                <span class="fw-semibold small">داشبورد</span>
-                <small class="text-muted d-none d-lg-inline">نمای کلی تیکت‌ها</small>
-            </div>
-        </a>
-    </li>
+            <!-- هدر کوچک بالای منو -->
+            <li class="px-2 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-flex justify-content-center align-items-center"
+                          style="width: 28px; height: 28px;">
+                    </span>
+                    <div class="d-flex flex-column">
+                    </div>
+                </div>
+            </li>
+        
+            <!-- هدر کوچک بالای منو -->
+            <li class="px-2 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+                          style="width: 28px; height: 28px;">
+                        <i class="fas fa-compass"></i>
+                    </span>
+                    <div class="d-flex flex-column">
+                        <span class="small fw-semibold text-dark">ناوبری</span>
+                        <small class="text-muted d-none d-lg-inline">دسترسی سریع به بخش‌های مهم</small>
+                    </div>
+                </div>
+            </li>
 
-    <li class="nav-item mb-1">
-        <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3
-                   {% if request.path == '/tickets/create/' %}active{% endif %}"
-           href="{% url 'tickets:ticket_form' %}">
-            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-success bg-opacity-10 text-success"
-                  style="width: 32px; height: 32px;">
-                <i class="fas fa-plus-circle"></i>
-            </span>
-            <div class="d-flex flex-column">
-                <span class="fw-semibold small">تیکت جدید</span>
-                <small class="text-muted d-none d-lg-inline">ثبت درخواست پشتیبانی</small>
-            </div>
-        </a>
-    </li>
+            {% if user.is_user %}
+                <!-- منوی اصلی کاربر -->
+                <li class="sidebar-heading d-flex align-items-center justify-content-between px-2 mt-2 mb-1">
+                    <span class="text-uppercase small text-muted fw-bold">منوی اصلی</span>
+                </li>
 
-    {% if user.is_support or user.is_admin %}
-    <!-- بخش پشتیبانی -->
-    <li class="sidebar-heading mt-3 d-flex align-items-center justify-content-between px-2 mb-1">
-        <span class="text-uppercase small text-muted fw-bold">پشتیبانی</span>
-    </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3 transition-all hover-effect
+                               {% if request.resolver_match.url_name == 'ticket_list' %}active{% endif %}"
+                       href="{% url 'tickets:ticket_list' %}">
+                        <span class="d-inline-flex justify-content-center align-items-center
+                                     rounded-circle bg-primary bg-opacity-10 text-primary"
+                              style="width: 32px; height: 32px;">
+                            <i class="fas fa-th-large"></i>
+                        </span>
+                        <div class="d-flex flex-column">
+                            <span class="fw-semibold small">داشبورد</span>
+                            <small class="text-muted d-none d-lg-inline">نمای کلی تیکت‌ها</small>
+                        </div>
+                    </a>
+                </li>
 
-    <li class="nav-item mb-1">
-        <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3
-                   {% if 'assigned_to' in request.GET %}active{% endif %}"
-           href="{% url 'tickets:ticket_list' %}?assigned_to=my">
-            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-info bg-opacity-10 text-info"
-                  style="width: 32px; height: 32px;">
-                <i class="fas fa-inbox"></i>
-            </span>
-            <div class="d-flex flex-column">
-                <span class="fw-semibold small">تیکت‌های من</span>
-                <small class="text-muted d-none d-lg-inline">تیکت‌های ارجاع داده شده به شما</small>
-            </div>
-        </a>
-    </li>
-    {% endif %}
+                <li class="nav-item mb-1">
+                    <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3 transition-all hover-effect
+                               {% if request.resolver_match.url_name == 'ticket_form' %}active{% endif %}"
+                       href="{% url 'tickets:ticket_form' %}">
+                        <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-success bg-opacity-10 text-success"
+                              style="width: 32px; height: 32px;">
+                            <i class="fas fa-plus-circle"></i>
+                        </span>
+                        <div class="d-flex flex-column">
+                            <span class="fw-semibold small">تیکت جدید</span>
+                            <small class="text-muted d-none d-lg-inline">ثبت درخواست پشتیبانی</small>
+                        </div>
+                    </a>
+                </li>
+            {% endif %}
 
-    {% if user.is_admin %}
-    <!-- بخش مدیریت -->
-    <li class="sidebar-heading mt-3 d-flex align-items-center justify-content-between px-2 mb-1">
-        <span class="text-uppercase small text-muted fw-bold">مدیریت</span>
-    </li>
+            {% if user.is_support %}
+                <!-- بخش پشتیبانی -->
+                <li class="sidebar-heading mt-3 d-flex align-items-center justify-content-between px-2 mb-1">
+                    <span class="text-uppercase small text-muted fw-bold">پشتیبانی</span>
+                </li>
 
-    <li class="nav-item mb-1">
-        <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3"
-           href="{% url 'admin:index' %}" target="_blank">
-            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-secondary bg-opacity-10 text-secondary"
-                  style="width: 32px; height: 32px;">
-                <i class="fas fa-cogs"></i>
-            </span>
-            <div class="d-flex flex-column">
-                <span class="fw-semibold small">پنل ادمین</span>
-                <small class="text-muted d-none d-lg-inline">مدیریت پیشرفته سیستم</small>
-            </div>
-        </a>
-    </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3 transition-all hover-effect
+                               {% if request.resolver_match.url_name == 'ticket_list'  %}active{% endif %}"
+                       href="{% url 'tickets:ticket_list' %}">
+                        <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-info bg-opacity-10 text-info"
+                              style="width: 32px; height: 32px;">
+                            <i class="fas fa-inbox"></i>
+                        </span>
+                        <div class="d-flex flex-column">
+                            <span class="fw-semibold small">تیکت‌های من</span>
+                            <small class="text-muted d-none d-lg-inline">تیکت‌های ارجاع داده شده به شما</small>
+                        </div>
+                    </a>
+                </li>
+            {% endif %}
 
-    <li class="nav-item mb-1">
-        <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3
-                   {% if 'status=open' in request.get_full_path %}active{% endif %}"
-           href="{% url 'tickets:ticket_list' %}?status=open">
-            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning bg-opacity-10 text-warning"
-                  style="width: 32px; height: 32px;">
-                <i class="fas fa-folder-open"></i>
-            </span>
-            <div class="d-flex flex-column">
-                <span class="fw-semibold small">تیکت‌های باز</span>
-                <small class="text-muted d-none d-lg-inline">در حال رسیدگی</small>
-            </div>
-        </a>
-    </li>
-    {% endif %}
-</ul>
+            {% if user.is_admin %}
+                <!-- بخش مدیریت -->
+                <li class="sidebar-heading mt-3 d-flex align-items-center justify-content-between px-2 mb-1">
+                    <span class="text-uppercase small text-muted fw-bold">مدیریت</span>
+                </li>
+
+                <li class="nav-item mb-1">
+                    <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3 transition-all hover-effect"
+                       href="{% url 'admin:index' %}" target="_blank">
+                        <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-secondary bg-opacity-10 text-secondary"
+                              style="width: 32px; height: 32px;">
+                            <i class="fas fa-cogs"></i>
+                        </span>
+                        <div class="d-flex flex-column">
+                            <span class="fw-semibold small">پنل ادمین</span>
+                            <small class="text-muted d-none d-lg-inline">مدیریت پیشرفته سیستم</small>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="nav-item mb-1">
+                    <a class="nav-link d-flex align-items-center gap-2 px-2 py-2 rounded-3 transition-all hover-effect
+                               {% if request.resolver_match.url_name == 'ticket_list' and request.GET.status == 'open' %}active{% endif %}"
+                       href="{% url 'tickets:ticket_list' %}?status=open">
+                        <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning bg-opacity-10 text-warning"
+                              style="width: 32px; height: 32px;">
+                            <i class="fas fa-folder-open"></i>
+                        </span>
+                        <div class="d-flex flex-column">
+                            <span class="fw-semibold small">تیکت‌های باز</span>
+                            <small class="text-muted d-none d-lg-inline">در حال رسیدگی</small>
+                        </div>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>

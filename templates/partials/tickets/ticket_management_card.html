@@ -1,0 +1,94 @@
+{% load static %}
+{% load humanize %}
+<div class="card shadow-lg border-0 rounded-4 mb-3">
+    <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+        <h6 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                        <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-10 text-primary"
+                              style="width: 32px; height: 32px;">
+                            <i class="fas fa-user-cog"></i>
+                        </span>
+            <span>مدیریت تیکت</span>
+        </h6>
+    </div>
+
+    <div class="card-body p-4 d-flex flex-column gap-3">
+
+        <!-- مدیریت پشتیبان -->
+        <div class="d-flex justify-content-between align-items-center gap-3">
+            <div>
+                <div class="small text-muted mb-1">
+                    پشتیبان فعلی
+                </div>
+                <div class="fw-semibold {% if not ticket.assigned_to %}text-muted{% endif %}">
+                    {% if ticket.assigned_to %}
+                        <i class="fas fa-user-headset me-1 text-warning"></i>
+                        {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+                    {% else %}
+                        <span class="text-muted">تعیین نشده</span>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="button"
+                    class="btn btn-outline-primary btn-sm rounded-pill px-3 d-flex align-items-center gap-1"
+                    data-bs-toggle="modal"
+                    data-bs-target="#assignSupportModal">
+                <i class="fas fa-user-plus"></i>
+                {% if ticket.assigned_to %}
+                    <span>تغییر پشتیبان</span>
+                    {% else %}
+                        <span>تعیین پشتیبان</span>
+                    {% endif %}
+            </button>
+        </div>
+
+        <hr class="my-2">
+
+        <!-- مدیریت درخواست بستن تیکت -->
+        <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+                <div class="small text-muted mb-1">
+                    درخواست بستن تیکت
+                </div>
+
+                {% with cr=ticket.close_request %}
+                    {% if cr and not cr.approved %}
+                        <div class="small">
+                            <span class="text-muted">درخواست توسط</span>
+                            <strong>{{ cr.requested_by.get_full_name|default:cr.requested_by.username }}</strong>
+                            <span class="text-muted">در تاریخ</span>
+                            <strong>{{ cr.created_at|naturalday }}</strong>
+                        </div>
+                        <div class="small text-warning mt-1">
+                            <i class="fas fa-hourglass-half ms-1"></i>
+                            در انتظار تأیید ادمین
+                        </div>
+                    {% elif cr and cr.approved %}
+                        <div class="small text-success">
+                            <i class="fas fa-check-circle ms-1"></i>
+                            درخواست بستن تأیید شده است
+                        </div>
+                        <div class="small text-muted">
+                            آخرین بروزرسانی: {{ cr.updated_at|naturalday }}
+                        </div>
+                    {% else %}
+                        <div class="small text-muted">
+                            هیچ درخواست بستن فعالی ثبت نشده است.
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            {% with cr=ticket.close_request %}
+                {% if cr and not cr.approved and ticket.status != 'closed' %}
+                    <button type="button"
+                            class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center gap-1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#approveCloseRequestModal">
+                        <i class="fas fa-check"></i>
+                        <span>قبول درخواست</span>
+                    </button>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+</div>
